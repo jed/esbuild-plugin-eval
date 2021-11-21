@@ -20,7 +20,7 @@ build({
 }).then(stop)
 ```
 
-In this case, we have a module that generates the first 50 fibonacci numbers like this:
+In this case, we have a module that generates the first 30 fibonacci numbers like this:
 
 ```js
 let fib = n => n < 2 ? 1 : fib(n - 1) + fib(n - 2)
