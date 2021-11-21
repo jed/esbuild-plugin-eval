@@ -6,7 +6,21 @@ This is an esbuild plugin that evaluates a module before importing it. It's usef
 
 When invoked with esbuild's `build` function and then added to its `plugins` option, this plugin will evaluate any imported module with `eval` in the query string of its path. It does this by bundling the module into a data url, dynamically importing it, and then re-exporting the results.
 
-So if we have this module that generates the first 50 fibonacci numbers like this:
+Here's an example of usage in Deno:
+
+```js
+import {build, stop} from 'https://deno.land/x/esbuild@v0.13.15/mod.js'
+import evalPlugin from 'https://deno.land/x/esbuild_plugin_eval@v1.0.0'
+
+build({
+  bundle: true,
+  entryPoints: ['./example/fibonacci.js'],
+  outfile: './example/fibonacci-bundled.js',
+  plugins: [evalPlugin(build)]
+}).then(stop)
+```
+
+In this case, we have this module that generates the first 50 fibonacci numbers like this:
 
 ```js
 let fib = n => n < 2 ? 1 : fib(n - 1) + fib(n - 2)
