@@ -10,7 +10,7 @@ Here's an example of usage in Deno:
 
 ```js
 import {build, stop} from 'https://deno.land/x/esbuild@v0.13.15/mod.js'
-import evalPlugin from 'https://deno.land/x/esbuild_plugin_eval@v1.0.0'
+import evalPlugin from 'https://deno.land/x/esbuild_plugin_eval@v1.0.4/mod.js'
 
 build({
   bundle: true,
