@@ -25,7 +25,7 @@ In this case, we have a module that generates the first 50 fibonacci numbers lik
 ```js
 let fib = n => n < 2 ? 1 : fib(n - 1) + fib(n - 2)
 
-export default Array.from({length: 50}, (_, n) => fib(n))
+export default Array.from({length: 30}, (_, n) => fib(n))
 ```
 
 Importing it without this plugin like this:
