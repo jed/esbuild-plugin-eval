@@ -20,7 +20,7 @@ build({
 }).then(stop)
 ```
 
-In this case, we have this module that generates the first 50 fibonacci numbers like this:
+In this case, we have a module that generates the first 50 fibonacci numbers like this:
 
 ```js
 let fib = n => n < 2 ? 1 : fib(n - 1) + fib(n - 2)
@@ -28,7 +28,7 @@ let fib = n => n < 2 ? 1 : fib(n - 1) + fib(n - 2)
 export default Array.from({length: 50}, (_, n) => fib(n))
 ```
 
-importing it without this plugin like this:
+Importing it without this plugin like this:
 
 ```js
 import table from './table.js'
