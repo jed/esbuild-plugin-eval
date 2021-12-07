@@ -2,6 +2,24 @@
 
 This is an esbuild plugin that evaluates a module before importing it. It's useful in cases where you want to render static parts of your application at build time to prune runtime dependencies, such as pre-rendering html from JSX, or pre-calculating CSP header hashes.
 
+A best effort is made to properly handle function exports, but keep in mind that all variables accessed from exported functions will need to be exported as well.
+
+So this won't work:
+
+```js
+// hello.js
+let message = 'Hello, world!'
+export default () => console.log(message)
+```
+
+But this will:
+
+```js
+// hello.js
+export let message = 'Hello, world!'
+export default () => console.log(message)
+```
+
 ## Usage
 
 When invoked with esbuild's `build` function and then added to its `plugins` option, this plugin will evaluate any imported module with `eval` in the query string of its path. It does this by bundling the module into a data url, dynamically importing it, and then re-exporting the results.
@@ -67,3 +85,4 @@ export {
 ```
 
 In this case, Preact is used to render JSX and return plain HTML for a Cloudflare Worker, removing all remote dependencies and render compute overhead.
+
