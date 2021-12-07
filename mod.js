@@ -46,6 +46,8 @@ function stringify(v) {
     case 'function':
       try { return String(eval(`(${v})`)) }
       catch (e) { return String(v).replace(/^async|^/, '$& function ') }
+    case 'bigint':
+      return `${v}n`
     case 'undefined':
       return 'undefined'
     default:
