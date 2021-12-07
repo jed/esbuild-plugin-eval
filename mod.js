@@ -11,8 +11,8 @@ export default build => ({
       metafile: true
     }
 
-    onResolve({filter: /[?&]eval\b/}, ({path, importer}) => {
-      let {pathname} = new URL(path, `file://${importer}`)
+    onResolve({filter: /[?&]eval\b/}, ({path, resolveDir}) => {
+      let {pathname} = new URL(path, `file://${resolveDir}/`)
       return {namespace: 'eval', path: pathname}
     })
 
@@ -28,11 +28,27 @@ export default build => ({
 
       let entries = await import(dataurl).then(Object.entries)
       let contents = entries.reduce((js, [k, v]) => {
-        let ident = k === 'default' ? `${k} ` : `const ${k}=`
-        return js + `export ${ident}${JSON.stringify(v)}\n`
+        let ident = k === 'default' ? `${k} ` : `let ${k}=`
+        return js + `export ${ident}${stringify(v)}\n`
       }, '')
 
       return {loader: 'js', contents, watchFiles}
     })
   }
 })
+
+function stringify(v) {
+  switch (typeof v) {
+    case 'object':
+      if (v === null) return 'null'
+      if (Array.isArray(v)) return `[${v.map(stringify)}]`
+      return `{${Object.entries(v).map(e => e.map(stringify).join(':'))}}`
+    case 'function':
+      try { return String(eval(`(${v})`)) }
+      catch (e) { return String(v).replace(/^async|^/, '$& function ') }
+    case 'undefined':
+      return 'undefined'
+    default:
+      return JSON.stringify(v)
+  }
+}

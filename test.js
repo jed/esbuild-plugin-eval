@@ -1,9 +1,18 @@
-import {build, stop} from 'https://deno.land/x/esbuild@v0.13.15/mod.js'
+import {assertEquals} from 'https://deno.land/std/testing/asserts.ts'
+import {build, stop} from 'https://deno.land/x/esbuild@v0.14.2/mod.js'
 import evalPlugin from './mod.js'
 
-build({
+await build({
   bundle: true,
-  entryPoints: ['./example/fibonacci.js'],
-  outfile: './example/fibonacci-bundled.js',
-  plugins: [evalPlugin(build)]
+  format: 'esm',
+  entryPoints: ['./example/worker.jsx?eval'],
+  outdir: './example',
+  plugins: [evalPlugin(build)],
+  jsxFactory: 'h'
 }).then(stop)
+
+let {default: worker} = await import('./example/worker.js')
+let response = await worker.fetch()
+
+assertEquals(response.headers.get('content-length'), "22")
+assertEquals(await response.text(), '<h1>Hello, world!</h1>')

@@ -6,65 +6,64 @@ This is an esbuild plugin that evaluates a module before importing it. It's usef
 
 When invoked with esbuild's `build` function and then added to its `plugins` option, this plugin will evaluate any imported module with `eval` in the query string of its path. It does this by bundling the module into a data url, dynamically importing it, and then re-exporting the results.
 
-Here's an example of usage in Deno:
+In the provided Deno example, the following file:
+
+```jsx
+import {h} from 'https://unpkg.com/preact@10.5.13/dist/preact.module.js'
+import render from 'https://unpkg.com/preact-render-to-string@5.1.19/dist/index.module.js?module'
+
+let app = <h1>Hello, world!</h1>
+
+export let html = render(app)
+
+export let contentLength = new TextEncoder().encode(html).length
+
+export default {
+  async fetch(request) {
+    return new Response(html, {
+      headers: {
+        'content-type': 'text/html',
+        'content-length': contentLength
+      }
+    })
+  }
+}
+```
+
+is bundled via the code like the following:
 
 ```js
-import {build, stop} from 'https://deno.land/x/esbuild@v0.13.15/mod.js'
-import evalPlugin from 'https://deno.land/x/esbuild_plugin_eval@v1.0.4/mod.js'
+import {build, stop} from 'https://deno.land/x/esbuild@v0.14.2/mod.js'
+import evalPlugin from 'https://deno.land/x/esbuild_plugin_eval@v1.1.0/mod.js'
 
-build({
+await build({
   bundle: true,
-  entryPoints: ['./example/fibonacci.js'],
-  outfile: './example/fibonacci-bundled.js',
-  plugins: [evalPlugin(build)]
+  format: 'esm',
+  entryPoints: ['./example/worker.jsx?eval'],
+  outdir: './example',
+  plugins: [evalPlugin(build)],
+  jsxFactory: 'h'
 }).then(stop)
 ```
 
-In this case, we have a module that generates the first 30 fibonacci numbers like this:
+to create the following:
 
 ```js
-let fib = n => n < 2 ? 1 : fib(n - 1) + fib(n - 2)
-
-export default Array.from({length: 30}, (_, n) => fib(n))
+var contentLength = 22;
+var html = "<h1>Hello, world!</h1>";
+var worker_default = { "fetch": async function fetch(request) {
+  return new Response(html, {
+    headers: {
+      "content-type": "text/html",
+      "content-length": contentLength
+    }
+  });
+} };
+export {
+  contentLength,
+  worker_default as default,
+  html
+};
 ```
 
-Importing it without this plugin like this:
-
-```js
-import table from './table.js'
-
-table.forEach((fib, i) => console.log(`fib(${i}) = ${fib}`))
-```
-
-will result in this code:
-
-```js
-(() => {
-  // example/table.js
-  var fib = (n) => n < 2 ? 1 : fib(n - 1) + fib(n - 2);
-  var table_default = Array.from({ length: 30 }, (_, n) => fib(n));
-
-  // example/fibonacci.js
-  table_default.forEach((fib2, i) => console.log(`fib(${i}) = ${fib2}`));
-})();
-```
-
-whereas importing it with this plugin like this:
-
-```js
-import table from './table.js?eval'
-
-table.forEach((fib, i) => console.log(`fib(${i}) = ${fib}`))
-```
-
-will result in this code:
-
-```js
-(() => {
-  // eval:example/table.js
-  var table_default = [1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144, 233, 377, 610, 987, 1597, 2584, 4181, 6765, 10946, 17711, 28657, 46368, 75025, 121393, 196418, 317811, 514229, 832040];
-
-  // example/fibonacci.js
-  table_default.forEach((fib, i) => console.log(`fib(${i}) = ${fib}`));
-})();
-```
+In this case, Preact is used to render JSX and return plain HTML for a Cloudflare Worker, removing all remote dependencies and render compute overhead.
