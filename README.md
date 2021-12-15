@@ -52,7 +52,7 @@ is bundled via the code like the following:
 
 ```js
 import {build, stop} from 'https://deno.land/x/esbuild@v0.14.5/mod.js'
-import evalPlugin from 'https://deno.land/x/esbuild_plugin_eval@v1.1.0/mod.js'
+import evalPlugin from 'https://deno.land/x/esbuild_plugin_eval@v2.0.0/mod.js'
 
 await build({
   bundle: true,
