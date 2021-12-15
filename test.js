@@ -1,5 +1,5 @@
 import {assertEquals} from 'https://deno.land/std/testing/asserts.ts'
-import {build, stop} from 'https://deno.land/x/esbuild@v0.14.2/mod.js'
+import {build, stop} from 'https://deno.land/x/esbuild@v0.14.5/mod.js'
 import evalPlugin from './mod.js'
 
 await build({
@@ -7,7 +7,7 @@ await build({
   format: 'esm',
   entryPoints: ['./example/worker.jsx?eval'],
   outdir: './example',
-  plugins: [evalPlugin(build)],
+  plugins: [evalPlugin],
   jsxFactory: 'h'
 }).then(stop)
 

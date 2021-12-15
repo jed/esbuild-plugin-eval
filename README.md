@@ -22,7 +22,7 @@ export default () => console.log(message)
 
 ## Usage
 
-When invoked with esbuild's `build` function and then added to its `plugins` option, this plugin will evaluate any imported module with `eval` in the query string of its path. It does this by bundling the module into a data url, dynamically importing it, and then re-exporting the results.
+When added to esbuild's `plugins` option, this plugin will evaluate any imported module with `eval` in the query string of its path. It does this by bundling the module into a data url, dynamically importing it, and then re-exporting the results.
 
 In the provided Deno example, the following file:
 
@@ -51,7 +51,7 @@ export default {
 is bundled via the code like the following:
 
 ```js
-import {build, stop} from 'https://deno.land/x/esbuild@v0.14.2/mod.js'
+import {build, stop} from 'https://deno.land/x/esbuild@v0.14.5/mod.js'
 import evalPlugin from 'https://deno.land/x/esbuild_plugin_eval@v1.1.0/mod.js'
 
 await build({
@@ -59,7 +59,7 @@ await build({
   format: 'esm',
   entryPoints: ['./example/worker.jsx?eval'],
   outdir: './example',
-  plugins: [evalPlugin(build)],
+  plugins: [evalPlugin],
   jsxFactory: 'h'
 }).then(stop)
 ```

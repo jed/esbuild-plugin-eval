@@ -1,7 +1,7 @@
-export default build => ({
+export default {
   name: 'eval',
 
-  setup({initialOptions, onLoad, onResolve}) {
+  setup({initialOptions, onLoad, onResolve, esbuild}) {
     let options = {
       ...initialOptions,
       bundle: true,
@@ -17,7 +17,7 @@ export default build => ({
     })
 
     onLoad({filter: /.*/, namespace: 'eval'}, async ({path}) => {
-      let {metafile, outputFiles} = await build({...options, entryPoints: [path]})
+      let {metafile, outputFiles} = await esbuild.build({...options, entryPoints: [path]})
       let watchFiles = Object.keys(metafile.inputs)
       let dataurl = await new Promise(cb => {
         let reader = new FileReader()
@@ -35,7 +35,7 @@ export default build => ({
       return {loader: 'js', contents, watchFiles}
     })
   }
-})
+}
 
 function stringify(v) {
   switch (typeof v) {
