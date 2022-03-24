@@ -6,7 +6,7 @@ export default {
       ...initialOptions,
       bundle: true,
       format: 'esm',
-      sourcemap: 'inline',
+      sourcemap: false,
       write: false,
       metafile: true
     }
