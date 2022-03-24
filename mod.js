@@ -6,7 +6,6 @@ export default {
       ...initialOptions,
       bundle: true,
       format: 'esm',
-      sourcemap: false,
       write: false,
       metafile: true
     }
@@ -18,10 +17,11 @@ export default {
 
     onLoad({filter: /.*/, namespace: 'eval'}, async ({path}) => {
       let {metafile, outputFiles} = await esbuild.build({...options, entryPoints: [path]})
+      let file = outputFiles.find(f => /\.m?js$/.test(f.path))
       let watchFiles = Object.keys(metafile.inputs)
       let dataurl = await new Promise(cb => {
         let reader = new FileReader()
-        let blob = new Blob([outputFiles[0].contents])
+        let blob = new Blob([file.contents])
         reader.onload = () => cb(reader.result)
         reader.readAsDataURL(blob)
       })
