@@ -41,6 +41,7 @@ function stringify(v) {
   switch (typeof v) {
     case 'object':
       if (v === null) return 'null'
+      if (v instanceof Uint8Array) return `Uint8Array.from(atob('${btoa(String.fromCharCode(...v))}'),x=>x.charCodeAt())`
       if (Array.isArray(v)) return `[${v.map(stringify)}]`
       return `{${Object.entries(v).map(e => e.map(stringify).join(':'))}}`
     case 'function':

@@ -1,5 +1,5 @@
-import {assertEquals} from 'https://deno.land/std/testing/asserts.ts'
-import {build, stop} from 'https://deno.land/x/esbuild@v0.14.5/mod.js'
+import {assertEquals} from 'https://deno.land/std@0.166.0/testing/asserts.ts'
+import {build, stop} from 'https://deno.land/x/esbuild@v0.15.16/mod.js'
 import evalPlugin from './mod.js'
 
 await build({
